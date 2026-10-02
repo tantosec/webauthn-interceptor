@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en-AU" class="bg-transparent">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" href="../ui/interceptor-modal.css" />
+    </head>
+
+    <body class="bg-transparent rounded-lg overflow-hidden text-black font-sans text-sm antialiased w-72">
+        <div class="bg-white rounded-lg p-6 border border-black space-y-3">
+            <h3 class="text-lg font-semibold text-black">WebAuthn Interceptor</h3>
+            <p>Pause WebAuthn registration and login to inspect or edit the JSON.</p>
+            <div
+                id="request-toggle-container"
+                class="flex items-center justify-between mt-4 border-t border-gray-200 pt-3"
+            >
+                <span class="font-medium text-sm mr-2">Enable interception</span>
+                <label
+                    class="relative inline-flex items-center cursor-pointer"
+                    aria-label="Enable or disable WebAuthn interception"
+                >
+                    <input type="checkbox" id="request-enableToggle" class="sr-only peer" />
+                    <div
+                        class="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"
+                    ></div>
+                </label>
+            </div>
+            <div class="border-t border-gray-200 pt-3">
+                <label for="badAuthenticatorUrl" class="block font-medium text-sm mb-1"
+                    >badAuthenticator URL</label
+                >
+                <input
+                    type="url"
+                    id="badAuthenticatorUrl"
+                    placeholder="http://localhost:8888"
+                    class="w-full p-1.5 border border-black rounded text-xs focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                />
+            </div>
+
+            <div class="pt-2">
+                <label for="bearerToken" class="block font-medium text-sm mb-1">Bearer token</label>
+                <input
+                    type="password"
+                    id="bearerToken"
+                    placeholder="Enter Bearer token"
+                    class="w-full p-1.5 border border-black rounded text-xs focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                />
+            </div>
+
+            <button
+                id="clearBadAuthenticatorConfig"
+                type="button"
+                class="w-full px-3 py-1.5 text-xs bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-black font-medium border border-black rounded shadow-sm"
+            >
+                Clear configuration
+            </button>
+            <p id="settingsStatus" role="status" class="text-xs min-h-4"></p>
+        </div>
+        <script src="../popup.js"></script>
+    </body>
+</html>

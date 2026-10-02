@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+
+.textarea-common {
+    @apply w-full
+    resize-y
+    p-2
+    border
+    border-black
+    rounded
+    font-mono
+    text-xs
+    bg-white
+    text-black
+    focus:outline-none
+    focus:border-red-500
+    focus:ring-1
+    focus:ring-red-500;
+}
+
+@tailwind utilities;

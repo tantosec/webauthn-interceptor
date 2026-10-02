@@ -1,0 +1,51 @@
+{
+    "manifest_version": 3,
+    "name": "WebAuthn Interceptor",
+    "version": "0.1.0",
+    "minimum_chrome_version": "111",
+    "description": "Inspect and edit WebAuthn registration and authentication requests and responses.",
+    "permissions": [
+      "storage"
+    ],
+    "host_permissions": [
+      "<all_urls>"
+    ],
+    "background": {
+      "service_worker": "background.js",
+      "type": "module"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["webauthn_interceptor_main_world_script.js"],
+        "run_at": "document_start",
+        "all_frames": true,
+        "world": "MAIN"
+      },
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content_injector.js"],
+        "run_at": "document_start",
+        "all_frames": true
+      }
+    ],
+    "web_accessible_resources": [
+      {
+        "resources": [
+          "ui/interceptor-modal.html",
+          "ui/interceptor-modal.css",
+          "ui/interceptor-modal.js",
+          "ui/credential-selector.html",
+          "ui/credential-selector.js"
+        ],
+        "matches": ["<all_urls>"]
+      }
+    ],
+    "action": {
+      "default_popup": "popup/index.html",
+      "default_title": "WebAuthn Interceptor"
+    },
+    "icons": {
+      "16": "images/icon16.png"
+    }
+  }

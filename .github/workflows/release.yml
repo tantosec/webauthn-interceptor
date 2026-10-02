@@ -1,0 +1,89 @@
+name: CD - Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing vN.N.N tag to release (must already be on main)'
+        required: true
+        type: string
+
+jobs:
+  create-release:
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Validate tag format
+        env:
+          TAG_NAME: ${{ inputs.tag }}
+        run: |
+          if ! printf '%s' "$TAG_NAME" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Tag $TAG_NAME is not a strict vN.N.N release tag; refusing to release."
+            exit 1
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify tag is on main
+        env:
+          TAG_NAME: ${{ inputs.tag }}
+        run: |
+          if ! git rev-parse --verify --quiet refs/remotes/origin/main >/dev/null; then
+            echo "::error::refs/remotes/origin/main is missing; cannot verify tag provenance."
+            exit 1
+          fi
+          TAG_SHA="$(git rev-parse HEAD)"
+          if ! git merge-base --is-ancestor "$TAG_SHA" origin/main; then
+            echo "::error::Tag $TAG_NAME ($TAG_SHA) is not an ancestor of origin/main; refusing to release."
+            exit 1
+          fi
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: 26
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify tag matches project version
+        env:
+          TAG_NAME: ${{ inputs.tag }}
+        run: |
+          TAG_VERSION="${TAG_NAME#v}"
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          MANIFEST_VERSION="$(node -p "require('./public/manifest.json').version")"
+          if [ "$PACKAGE_VERSION" != "$MANIFEST_VERSION" ]; then
+            echo "::error::package.json ($PACKAGE_VERSION) and manifest.json ($MANIFEST_VERSION) disagree."
+            exit 1
+          fi
+          if [ "$TAG_VERSION" != "$PACKAGE_VERSION" ]; then
+            echo "::error::Tag $TAG_NAME does not match project version $PACKAGE_VERSION."
+            exit 1
+          fi
+
+      - name: Build extension
+        run: pnpm build
+
+      - name: Package extension
+        env:
+          TAG_NAME: ${{ inputs.tag }}
+        run: cd dist && zip -r "../webauthn-interceptor-${TAG_NAME}.zip" .
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ inputs.tag }}
+        run: gh release create "$TAG_NAME" "webauthn-interceptor-${TAG_NAME}.zip" --generate-notes --verify-tag

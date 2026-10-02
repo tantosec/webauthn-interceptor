@@ -1,0 +1,96 @@
+<!doctype html>
+
+<html lang="en-AU">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" href="interceptor-modal.css" />
+    </head>
+
+    <body class="text-sm font-sans bg-white p-4 mx-auto flex flex-col h-screen">
+        <div class="header-section">
+            <h2 id="modalHeader" class="text-lg font-semibold text-black">WebAuthn request</h2>
+            <p class="text-black text-xs mt-1 mb-2">
+                Edit the request before calling an authenticator, or paste a response to return to the
+                website.
+            </p>
+        </div>
+        <div class="options-section flex flex-col flex-grow min-h-0">
+            <div class="flex justify-between items-center mb-1.5">
+                <h3 id="requestDisplayLabel" class="font-medium text-black text-xs">Request JSON</h3>
+                <button
+                    id="copyRequestButton"
+                    title="Copy request JSON to clipboard"
+                    aria-label="Copy request JSON to clipboard"
+                    class="px-2 py-1 text-xs bg-black hover:bg-gray-800 text-white rounded shadow-sm"
+                >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="../images/icons.svg#icon-clipboard"></use>
+                    </svg>
+                </button>
+            </div>
+            <textarea
+                id="requestDisplay"
+                class="textarea-common"
+                rows="18"
+                aria-labelledby="requestDisplayLabel"
+            ></textarea>
+            <p id="jsonError" class="text-xs text-red-600 mt-1 min-h-4" role="alert"></p>
+        </div>
+        <div class="response-section flex flex-col mt-2">
+            <div class="flex justify-between items-center mb-1.5">
+                <h3 id="responseDisplayLabel" class="font-medium text-black text-xs">Response JSON</h3>
+                <button
+                    id="copyResponseButton"
+                    title="Copy response JSON to clipboard"
+                    aria-label="Copy response JSON to clipboard"
+                    class="px-2 py-1 text-xs bg-black hover:bg-gray-800 text-white rounded shadow-sm"
+                >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <use href="../images/icons.svg#icon-clipboard"></use>
+                    </svg>
+                </button>
+            </div>
+            <textarea
+                id="responseDisplay"
+                class="textarea-common"
+                rows="16"
+                aria-labelledby="responseDisplayLabel"
+            ></textarea>
+        </div>
+
+        <div
+            id="remoteAuthenticatorSection"
+            class="hidden mt-3 p-3 border border-dashed border-black rounded"
+        >
+            <h3 class="font-medium text-black text-xs mb-2">Remote authenticator</h3>
+            <button
+                id="queryBadAuthenticator"
+                class="w-full px-3 py-1.5 text-sm bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-black font-medium border border-black rounded shadow-sm"
+            >
+                Query badAuthenticator
+            </button>
+        </div>
+        <div class="actions-section flex justify-end gap-3 mt-4">
+            <button
+                id="proceedButton"
+                class="px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded shadow-sm"
+            >
+                Proceed
+            </button>
+            <button
+                id="cancelButton"
+                class="px-3 py-1.5 text-sm bg-white hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-black font-medium border border-black rounded shadow-sm"
+            >
+                Cancel
+            </button>
+        </div>
+        <p
+            id="feedbackMessage"
+            class="text-xs text-center min-h-8 p-1 mt-2 mb-1"
+            role="status"
+            aria-live="polite"
+        ></p>
+
+        <script src="interceptor-modal.js"></script>
+    </body>
+</html>
